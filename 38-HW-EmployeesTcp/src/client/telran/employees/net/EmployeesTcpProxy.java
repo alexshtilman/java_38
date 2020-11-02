@@ -4,6 +4,7 @@ import static common.telran.employees.api.ApiConstants.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import common.telran.employees.services.interfaces.EmployeeService;
 import common.telran.net.TcpClientJava;
@@ -38,7 +39,7 @@ public class EmployeesTcpProxy extends TcpClientJava implements EmployeeService 
 
 	@Override
 	public Iterable<Employee> getEmployeesByAge(int ageFrom, int ageTo) {
-		Object[] data = { ageFrom, ageTo };
+		BiIntParam data = new BiIntParam(ageFrom,ageTo);
 		return sendRequest(GET_EMPLOYEES_BY_AGE, data);
 	}
 
@@ -49,7 +50,7 @@ public class EmployeesTcpProxy extends TcpClientJava implements EmployeeService 
 
 	@Override
 	public Iterable<Employee> getEmployeesBySalary(int salaryFrom, int salaryTo) {
-		Object[] data = { salaryFrom, salaryTo };
+		BiIntParam data = new BiIntParam(salaryFrom,salaryTo);
 		return sendRequest(GET_EMPLOYEES_BY_SALARY, data);
 	}
 
@@ -60,7 +61,7 @@ public class EmployeesTcpProxy extends TcpClientJava implements EmployeeService 
 
 	@Override
 	public DepartmentSalary[] getDepartmentAvgSalaryDistribution() {
-		return sendRequest(GET_DEPARTMENT_AVG_SALARY, "");
+		return sendRequest(GET_DEPARTMENT_AVG_SALARY, new DateTimeRequest( LocalDate.now()));
 	}
 
 	@Override
@@ -70,13 +71,13 @@ public class EmployeesTcpProxy extends TcpClientJava implements EmployeeService 
 	}
 
 	@Override
-	public ReturnCodes saveToFiles() throws FileNotFoundException, IOException, ClassNotFoundException {
-		return sendRequest(SAVE_TO_FILES, "");
+	public ReturnCodes saveToDB() throws FileNotFoundException, IOException, ClassNotFoundException {
+		return sendRequest(SAVE_TO_DB, new DateTimeRequest( LocalDate.now()));
 	}
 
 	@Override
-	public ReturnCodes loadFromFiles() throws FileNotFoundException, IOException, ClassNotFoundException {
-		return sendRequest(LOAD_FROM_FILES, "");
+	public ReturnCodes loadFromDB() throws FileNotFoundException, IOException, ClassNotFoundException {
+		return sendRequest(LOAD_FROM_DB, new DateTimeRequest( LocalDate.now()));
 	}
 
 }

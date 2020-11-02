@@ -59,7 +59,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 			IntSummaryStatistics stats = v.stream().mapToInt(Employee::getSalary).summaryStatistics();
 			Departmentlist.add(new DepartmentSalary(k, stats.getAverage()));
 		});
-		System.out.println("getDepartmentAvgSalaryDistribution total emp = "+ Departmentlist.size());
 		Arrays.sort(Departmentlist.toArray(new DepartmentSalary[0]),
 				(o1, o2) -> Double.compare(o2.getAvgSalary(), o1.getAvgSalary()));
 		return Departmentlist.toArray(new DepartmentSalary[0]);
@@ -191,7 +190,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return ReturnCodes.OK;
 	}
 	
-	public ReturnCodes saveToFiles() throws  IOException, ClassNotFoundException {
+	public ReturnCodes saveToDB() throws  IOException, ClassNotFoundException {
 		try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream("employees.data"))) {
 			stream.writeObject(employees);
 			stream.writeObject(employeesSalary);
@@ -202,7 +201,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ReturnCodes loadFromFiles() throws IOException, ClassNotFoundException {
+	public ReturnCodes loadFromDB() throws IOException, ClassNotFoundException {
 		try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream("employees.data"))) {
 			employees = (HashMap<Long, Employee>) stream.readObject();
 			employeesSalary= (TreeMap<Integer, List<Employee>>) stream.readObject();

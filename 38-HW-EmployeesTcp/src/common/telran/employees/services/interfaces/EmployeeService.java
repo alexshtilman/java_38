@@ -26,7 +26,7 @@ public interface EmployeeService {
 
 	public DepartmentSalary[] getDepartmentAvgSalaryDistribution();
 
-	ReturnCodes saveToFiles() throws FileNotFoundException, IOException, ClassNotFoundException;
+	ReturnCodes saveToDB() throws FileNotFoundException, IOException, ClassNotFoundException;
 
-	ReturnCodes loadFromFiles() throws FileNotFoundException, IOException,ClassNotFoundException;
+	ReturnCodes loadFromDB() throws FileNotFoundException, IOException,ClassNotFoundException;
 }

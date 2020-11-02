@@ -27,9 +27,7 @@ public class ServerClientJava implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				RequestJava request = (RequestJava) input.readObject();
-				ResponseJava response = protocol.getResponse(request);
-				output.writeObject(response);
+				output.writeObject(protocol.getResponse((RequestJava) input.readObject()));
 			}
 		} catch (EOFException e) {
 			System.out.println("client closed connection");

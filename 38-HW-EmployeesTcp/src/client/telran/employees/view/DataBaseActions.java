@@ -29,7 +29,7 @@ static EmployeeService service;
 	}
 	private static void loadFromDB(InputOutput io)  {
 		try {
-			io.writeLn(service.loadFromFiles());
+			io.writeLn(service.loadFromDB());
 		} catch (FileNotFoundException e) {
 			
 			e.printStackTrace();
@@ -43,7 +43,7 @@ static EmployeeService service;
 	}
 	private static void saveToDB(InputOutput io)  {
 		try {
-			io.writeLn(service.saveToFiles());
+			io.writeLn(service.saveToDB());
 		} catch (FileNotFoundException e) {
 			
 			e.printStackTrace();
