@@ -1,7 +1,6 @@
 package server.telran.employees.net;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import common.telran.employees.dto.*;
@@ -11,11 +10,11 @@ import common.telran.net.*;
 import server.telran.net.server.ProtocolJava;
 
 public class EmployeesProtocol implements ProtocolJava {
-	static EmployeeService service;
+	EmployeeService service;
 
 	public EmployeesProtocol(EmployeeService service) {
 		super();
-		EmployeesProtocol.service = service;
+		this.service = service;
 	}
 
 	@Override
@@ -24,24 +23,17 @@ public class EmployeesProtocol implements ProtocolJava {
 		try {
 			Method method = clazz.getDeclaredMethod(request.requestType, Serializable.class);
 			method.setAccessible(true);
-			try {
-				return (ResponseJava) method.invoke(clazz, request.requestData);
-			} catch (IllegalAccessException e) {
-				return new ResponseJava(TcpResponseCode.WRONG_ARGUMENTS, "IllegalAccessException :" + e.getMessage());
-			} catch (IllegalArgumentException e) {
-				return new ResponseJava(TcpResponseCode.WRONG_ARGUMENTS, "IllegalArgumentException :" + e.getMessage());
-			} catch (InvocationTargetException e) {
-				return new ResponseJava(TcpResponseCode.WRONG_ARGUMENTS,
-						"InvocationTargetException :" + e.getMessage());
-			}
-
+			return (ResponseJava) method.invoke(this, request.requestData);
 		} catch (NoSuchMethodException e) {
 			return new ResponseJava(TcpResponseCode.WRONG_REUEST, "wrong request type: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseJava(TcpResponseCode.INTERNAL_ERROR, "INTERNAL SERVER ERROR " + e.getMessage());
 		}
 
 	}
 
-	static ResponseJava addEmployee(Serializable requestData) {
+	ResponseJava addEmployee(Serializable requestData) {
 		try {
 			Employee empl = (Employee) requestData;
 			ReturnCodes res = service.addEmployee(empl);
@@ -51,7 +43,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getEmployee(Serializable requestData) {
+	ResponseJava getEmployee(Serializable requestData) {
 		try {
 			Long id = (Long) requestData;
 			Employee empl = service.getEmployee(id);
@@ -61,7 +53,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava removeEmployee(Serializable requestData) {
+	ResponseJava removeEmployee(Serializable requestData) {
 		try {
 			Long id = (Long) requestData;
 			ReturnCodes empl = service.removeEmployee(id);
@@ -71,7 +63,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava updateEmployee(Serializable requestData) {
+	ResponseJava updateEmployee(Serializable requestData) {
 		try {
 			Object[] data = (Object[]) requestData;
 			Employee empl = service.updateEmployee((Long) data[0], (Employee) data[1]);
@@ -81,7 +73,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava generateEmployees(Serializable requestData) {
+	ResponseJava generateEmployees(Serializable requestData) {
 		try {
 			Integer[] data = (Integer[]) requestData;
 			ReturnCodes empl = service.generateRandomEmployees(data[0], data[1], data[2], GeneratorMode.RANDOM);
@@ -91,7 +83,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getStatisticsOperationsItem(Serializable requestData) {
+	ResponseJava getStatisticsOperationsItem(Serializable requestData) {
 		try {
 			Integer[] data = (Integer[]) requestData;
 			ReturnCodes empl = service.generateRandomEmployees(data[0], data[1], data[2], GeneratorMode.RANDOM);
@@ -101,7 +93,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getDepartmentAvgSalaryDistribution(Serializable requestData) {
+	ResponseJava getDepartmentAvgSalaryDistribution(Serializable requestData) {
 		try {
 			DepartmentSalary[] empl = service.getDepartmentAvgSalaryDistribution();
 			return new ResponseJava(TcpResponseCode.OK, empl);
@@ -110,7 +102,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava minMaxSalaryEmployees(Serializable requestData) {
+	ResponseJava minMaxSalaryEmployees(Serializable requestData) {
 		try {
 			MinMaxSalaryEmployees[] empl = service.getEmployeesBySalariesInterval((Integer) requestData);
 			return new ResponseJava(TcpResponseCode.OK, empl);
@@ -119,7 +111,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getEmployeesByAge(Serializable requestData) {
+	ResponseJava getEmployeesByAge(Serializable requestData) {
 		try {
 			BiIntParam data = (BiIntParam) requestData;
 			Iterable<Employee> empl = service.getEmployeesByAge(data.getFrom(), data.getTo());
@@ -129,7 +121,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getEmployeesByDepartment(Serializable requestData) {
+	ResponseJava getEmployeesByDepartment(Serializable requestData) {
 		try {
 			Iterable<Employee> empl = service.getEmployeesByDepartment((String) requestData);
 			return new ResponseJava(TcpResponseCode.OK, (Serializable) empl);
@@ -138,7 +130,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava getEmployeeBySalary(Serializable requestData) {
+	ResponseJava getEmployeeBySalary(Serializable requestData) {
 		try {
 			BiIntParam data = (BiIntParam) requestData;
 			Iterable<Employee> empl = service.getEmployeesBySalary(data.getFrom(), data.getTo());
@@ -148,7 +140,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava saveToDB(Serializable requestData) {
+	ResponseJava saveToDB(Serializable requestData) {
 		try {
 			ReturnCodes code = service.saveToDB();
 			return new ResponseJava(TcpResponseCode.OK, code);
@@ -157,7 +149,7 @@ public class EmployeesProtocol implements ProtocolJava {
 		}
 	}
 
-	static ResponseJava loadFromDB(Serializable requestData) {
+	ResponseJava loadFromDB(Serializable requestData) {
 		try {
 			ReturnCodes code = service.loadFromDB();
 			return new ResponseJava(TcpResponseCode.OK, (Serializable) code);
